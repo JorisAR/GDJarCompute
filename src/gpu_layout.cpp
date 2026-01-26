@@ -1,4 +1,4 @@
-#include "gpu_layout.hpp"
+#include <jarcompute/gpu_layout.h>
 
 namespace jarcompute {
 

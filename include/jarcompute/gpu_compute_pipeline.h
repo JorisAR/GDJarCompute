@@ -1,8 +1,8 @@
 #ifndef JARCOMPUTE_GPU_COMPUTE_PIPELINE_H
 #define JARCOMPUTE_GPU_COMPUTE_PIPELINE_H
 
-#include "device_context.hpp"
-#include "gpu_layout.hpp"
+#include "device_context.h"
+#include "gpu_layout.h"
 
 #include <godot_cpp/classes/rd_shader_file.hpp>
 #include <godot_cpp/classes/rd_shader_spirv.hpp>

@@ -1,7 +1,7 @@
 #ifndef JARCOMPUTE_GPU_BUFFER_H
 #define JARCOMPUTE_GPU_BUFFER_H
 
-#include "gpu_resource.hpp"
+#include "gpu_resource.h"
 #include <cstddef>
 
 namespace jarcompute {

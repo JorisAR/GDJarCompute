@@ -1,4 +1,4 @@
-#include "gpu_binding.hpp"
+#include <jarcompute/gpu_binding.h>
 #include <godot_cpp/classes/rendering_device.hpp>
 
 using namespace godot;

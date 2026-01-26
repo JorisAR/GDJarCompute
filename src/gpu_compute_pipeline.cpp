@@ -1,17 +1,18 @@
-#include "gpu_compute_pipeline.hpp"
+#include <jarcompute/gpu_compute_pipeline.h>
 #include <godot_cpp/classes/rd_shader_file.hpp>
 #include <godot_cpp/classes/rd_shader_spirv.hpp>
 #include <godot_cpp/classes/resource_loader.hpp>
 #include <godot_cpp/classes/rd_uniform.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
+#include <map>
 
 using namespace godot;
 
 namespace jarcompute {
 
-GpuComputePipeline::GpuComputePipeline(DeviceContext& ctx, const String& shader_path)
+GpuComputePipeline::GpuComputePipeline(DeviceContext &ctx, const String &shader_path)
     : _ctx(ctx) {
-    RenderingDevice* rd = _ctx.rd();
+    RenderingDevice *rd = _ctx.rd();
     if (!rd) {
         UtilityFunctions::printerr("GpuComputePipeline: RenderingDevice is null.");
         return;
@@ -42,37 +43,56 @@ GpuComputePipeline::GpuComputePipeline(DeviceContext& ctx, const String& shader_
     }
 }
 
-void GpuComputePipeline::bind_layout(const GpuLayout& layout) {
-    RenderingDevice* rd = _ctx.rd();
+void GpuComputePipeline::bind_layout(const GpuLayout &layout) {
+    RenderingDevice *rd = _ctx.rd();
     if (!rd || !_shader.is_valid())
         return;
 
     _uniform_sets.clear();
 
-    // Group bindings by set
-    std::unordered_map<uint32_t, TypedArray<RDUniform>> per_set_uniforms;
+    // Group bindings by set index
+    std::map<uint32_t, TypedArray<RDUniform>> per_set_uniforms;
 
-    for (const auto& b : layout.bindings()) {
-        if (!b.resource || !b.resource->rid().is_valid())
+    for (const auto &b : layout.bindings()) {
+        if (!b.resource)
+            continue;
+
+        const auto &ids = b.resource->rids();
+        if (ids.empty())
             continue;
 
         Ref<RDUniform> u;
         u.instantiate();
         u->set_binding(b.binding);
         u->set_uniform_type(b.uniform_type);
-        u->add_id(b.resource->rid());
+
+        for (const RID &rid : ids) {
+            if (rid.is_valid())
+                u->add_id(rid);
+        }
+
+        // If no valid IDs ended up in the uniform, skip it
+        if (u->get_ids().is_empty())
+            continue;
 
         per_set_uniforms[b.set].push_back(u);
     }
 
-    // Create uniform sets
-    for (auto& [set_index, uniforms] : per_set_uniforms) {
+    // Create uniform sets only for sets we actually populated
+    for (auto &[set_index, uniforms] : per_set_uniforms) {
+        if (uniforms.is_empty())
+            continue;
+
         RID set_rid = rd->uniform_set_create(uniforms, _shader, set_index);
+        if (!set_rid.is_valid()) {
+            UtilityFunctions::printerr("GpuComputePipeline: Failed to create uniform set for set ", set_index);
+            continue;
+        }
         _uniform_sets[set_index] = set_rid;
     }
 }
 
-void GpuComputePipeline::set_push_constants(const void* data, size_t bytes) {
+void GpuComputePipeline::set_push_constants(const void *data, size_t bytes) {
     _push_constants.resize(bytes);
     if (bytes > 0 && data) {
         std::memcpy(_push_constants.data(), data, bytes);
@@ -80,7 +100,7 @@ void GpuComputePipeline::set_push_constants(const void* data, size_t bytes) {
 }
 
 void GpuComputePipeline::dispatch(uint32_t x, uint32_t y, uint32_t z) {
-    RenderingDevice* rd = _ctx.rd();
+    RenderingDevice *rd = _ctx.rd();
     if (!rd || !_pipeline.is_valid())
         return;
 
@@ -88,8 +108,10 @@ void GpuComputePipeline::dispatch(uint32_t x, uint32_t y, uint32_t z) {
     rd->compute_list_bind_compute_pipeline(list, _pipeline);
 
     // Bind uniform sets
-    for (const auto& [set_index, set_rid] : _uniform_sets) {
-        rd->compute_list_bind_uniform_set(list, set_rid, set_index);
+    for (const auto &[set_index, set_rid] : _uniform_sets) {
+        if (set_rid.is_valid()) {
+            rd->compute_list_bind_uniform_set(list, set_rid, set_index);
+        }
     }
 
     // Push constants (if any)

@@ -1,7 +1,7 @@
 #ifndef JARCOMPUTE_GPU_STRUCTURED_BUFFER_H
 #define JARCOMPUTE_GPU_STRUCTURED_BUFFER_H
 
-#include "gpu_buffer.hpp"
+#include "gpu_buffer.h"
 #include <type_traits>
 #include <span>
 

@@ -1,4 +1,4 @@
-#include "gpu_resource.hpp"
+#include <jarcompute/gpu_resource.h>
 
 namespace jarcompute {
 

@@ -1,7 +1,7 @@
 #ifndef JARCOMPUTE_GPU_BINDING_H
 #define JARCOMPUTE_GPU_BINDING_H
 
-#include "gpu_resource.hpp"
+#include "gpu_resource.h"
 #include <godot_cpp/classes/rendering_device.hpp>
 
 namespace jarcompute {

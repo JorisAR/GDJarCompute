@@ -12,7 +12,7 @@ public:
     DeviceContext(godot::RenderingDevice* existing = nullptr);
     ~DeviceContext();
 
-    godot::RenderingDevice* rd() const { return _rd; }
+    godot::RenderingDevice* rd() const;
 
     void submit();
     void sync();

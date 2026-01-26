@@ -6,7 +6,6 @@
 #include <cstring>
 #include <type_traits>
 #include <vector>
-#include <span>
 
 namespace jarcompute {
 
@@ -30,27 +29,6 @@ inline godot::PackedByteArray struct_to_bytes(const T& obj) {
     godot::PackedByteArray arr;
     arr.resize(sizeof(T));
     std::memcpy(arr.ptrw(), &obj, sizeof(T));
-    return arr;
-}
-
-// ------------------------------------------------------------
-//  Convert a span of trivially copyable structs to PackedByteArray
-// ------------------------------------------------------------
-
-template <typename T>
-inline godot::PackedByteArray span_to_bytes(std::span<const T> values) {
-    static_assert(std::is_trivially_copyable_v<T>,
-                  "span_to_bytes<T> requires T to be trivially copyable.");
-
-    size_t total_bytes = values.size() * sizeof(T);
-
-    godot::PackedByteArray arr;
-    arr.resize(total_bytes);
-
-    if (total_bytes > 0) {
-        std::memcpy(arr.ptrw(), values.data(), total_bytes);
-    }
-
     return arr;
 }
 
