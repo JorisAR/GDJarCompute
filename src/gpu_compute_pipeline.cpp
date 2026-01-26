@@ -1,6 +1,7 @@
 #include <jarcompute/gpu_compute_pipeline.h>
 #include <godot_cpp/classes/rd_shader_file.hpp>
 #include <godot_cpp/classes/rd_shader_spirv.hpp>
+#include <godot_cpp/classes/uniform_set_cache_rd.hpp>
 #include <godot_cpp/classes/resource_loader.hpp>
 #include <godot_cpp/classes/rd_uniform.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
@@ -83,7 +84,8 @@ void GpuComputePipeline::bind_layout(const GpuLayout &layout) {
         if (uniforms.is_empty())
             continue;
 
-        RID set_rid = rd->uniform_set_create(uniforms, _shader, set_index);
+        // RID set_rid = rd->uniform_set_create(uniforms, _shader, set_index);
+        RID set_rid = UniformSetCacheRD::get_cache(_shader, set_index, uniforms);
         if (!set_rid.is_valid()) {
             UtilityFunctions::printerr("GpuComputePipeline: Failed to create uniform set for set ", set_index);
             continue;
