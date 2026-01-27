@@ -19,16 +19,14 @@ GpuBuffer::GpuBuffer(DeviceContext& ctx, size_t initial_size)
     }
 }
 
-void GpuBuffer::ensure_size(size_t bytes) {
+
+void GpuBuffer::resize(size_t bytes) {
     if (bytes == 0)
         bytes = 1; // avoid zero-sized buffers
 
-    if (bytes <= _capacity && rid().is_valid())
-        return;
-
     // Recreate buffer
     if (rid().is_valid()) {
-        _ctx.free_later(rid());
+        _ctx.queue_free(rid());
         _rids.clear();
     }
 
@@ -38,6 +36,16 @@ void GpuBuffer::ensure_size(size_t bytes) {
 
     _rids = {_ctx.rd()->storage_buffer_create(bytes, init)};
     _capacity = bytes;
+}
+
+void GpuBuffer::ensure_size(size_t bytes) {
+    if (bytes == 0)
+        bytes = 1; // avoid zero-sized buffers
+
+    if (bytes <= _capacity && rid().is_valid())
+        return;
+
+    resize(bytes);
 }
 
 void GpuBuffer::upload(const void* data, size_t bytes, size_t offset) {

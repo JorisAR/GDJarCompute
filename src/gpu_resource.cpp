@@ -7,6 +7,10 @@ GpuResource::GpuResource(DeviceContext& ctx, ResourceType type)
     // _rid is default-initialized (invalid)
 }
 
-GpuResource::~GpuResource() = default;
+GpuResource::~GpuResource() {
+    for (const godot::RID& rid : _rids) {
+        _ctx.queue_free(rid);
+    }
+}
 
 } // namespace jarcompute

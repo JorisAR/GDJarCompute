@@ -10,6 +10,7 @@ class GpuBuffer : public GpuResource {
 public:
     GpuBuffer(DeviceContext& ctx, size_t initial_size = 0);
 
+    void resize(size_t bytes);
     void ensure_size(size_t bytes);
     void upload(const void* data, size_t bytes, size_t offset = 0);
     void download(void* dst, size_t bytes, size_t offset = 0);

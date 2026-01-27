@@ -17,7 +17,8 @@ public:
     void submit();
     void sync();
 
-    void free_later(godot::RID rid);
+    void queue_free(godot::RID rid);
+    void free(godot::RID rid);
     void flush_deletions();
 
 private:

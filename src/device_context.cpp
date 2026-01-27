@@ -1,4 +1,5 @@
 #include <jarcompute/device_context.h>
+#include "device_context.h"
 
 using namespace godot;
 
@@ -39,12 +40,18 @@ void DeviceContext::sync() {
     }
 }
 
-void DeviceContext::free_later(RID rid) {
+void DeviceContext::queue_free(RID rid) {
     if (!rid.is_valid())
         return;
     _deletion_queue.push_back(rid);
 }
 
+void DeviceContext::free(godot::RID rid)
+{
+    if (rid.is_valid()) {
+        _rd->free_rid(rid);
+    }
+}
 void DeviceContext::flush_deletions() {
     if (!_rd)
         return;
