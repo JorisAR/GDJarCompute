@@ -14,6 +14,8 @@ namespace jarcompute {
 GpuComputePipeline::GpuComputePipeline(DeviceContext &ctx, const String &shader_path)
     : _ctx(ctx) {
     RenderingDevice *rd = _ctx.rd();
+    _shader_name = shader_path.get_file();
+    
     if (!rd) {
         UtilityFunctions::printerr("GpuComputePipeline: RenderingDevice is null.");
         return;
@@ -33,13 +35,13 @@ GpuComputePipeline::GpuComputePipeline(DeviceContext &ctx, const String &shader_
 
     _shader = rd->shader_create_from_spirv(spirv);
     if (!_shader.is_valid()) {
-        UtilityFunctions::printerr("GpuComputePipeline: Failed to create shader from SPIR-V.");
+        UtilityFunctions::printerr("GpuComputePipeline (" + _shader_name + "): Failed to create shader from SPIR-V.");
         return;
     }
 
     _pipeline = rd->compute_pipeline_create(_shader);
     if (!_pipeline.is_valid()) {
-        UtilityFunctions::printerr("GpuComputePipeline: Failed to create compute pipeline.");
+        UtilityFunctions::printerr("GpuComputePipeline (" + _shader_name + "): Failed to create compute pipeline.");
         return;
     }
 }
@@ -87,7 +89,7 @@ void GpuComputePipeline::bind_layout(const GpuLayout &layout) {
         // RID set_rid = rd->uniform_set_create(uniforms, _shader, set_index);
         RID set_rid = UniformSetCacheRD::get_cache(_shader, set_index, uniforms);
         if (!set_rid.is_valid()) {
-            UtilityFunctions::printerr("GpuComputePipeline: Failed to create uniform set for set ", set_index);
+            UtilityFunctions::printerr("GpuComputePipeline (" + _shader_name + "): Failed to create uniform set for set ", set_index);
             continue;
         }
         _uniform_sets[set_index] = set_rid;

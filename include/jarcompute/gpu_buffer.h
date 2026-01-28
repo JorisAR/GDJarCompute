@@ -9,6 +9,7 @@ namespace jarcompute {
 class GpuBuffer : public GpuResource {
 public:
     GpuBuffer(DeviceContext& ctx, size_t initial_size = 0);
+    ~GpuBuffer();
 
     void resize(size_t bytes);
     void ensure_size(size_t bytes);

@@ -19,6 +19,11 @@ GpuBuffer::GpuBuffer(DeviceContext& ctx, size_t initial_size)
     }
 }
 
+GpuBuffer::~GpuBuffer() {
+    if (rid().is_valid()) {
+        _ctx.free(rid());
+    }
+}
 
 void GpuBuffer::resize(size_t bytes) {
     if (bytes == 0)
@@ -26,7 +31,7 @@ void GpuBuffer::resize(size_t bytes) {
 
     // Recreate buffer
     if (rid().is_valid()) {
-        _ctx.queue_free(rid());
+        _ctx.free(rid());
         _rids.clear();
     }
 

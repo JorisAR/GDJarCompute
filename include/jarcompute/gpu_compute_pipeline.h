@@ -25,6 +25,7 @@ private:
     DeviceContext& _ctx;
     godot::RID _shader;
     godot::RID _pipeline;
+    godot::String _shader_name = "";
 
     std::vector<uint8_t> _push_constants;
 
