@@ -1,5 +1,4 @@
 #include <jarcompute/device_context.h>
-#include "device_context.h"
 
 using namespace godot;
 
