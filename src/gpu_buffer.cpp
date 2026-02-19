@@ -26,6 +26,9 @@ GpuBuffer::~GpuBuffer() {
 }
 
 void GpuBuffer::resize(size_t bytes) {
+    if(bytes == _capacity)
+        return;
+        
     if (bytes == 0)
         bytes = 1; // avoid zero-sized buffers
 

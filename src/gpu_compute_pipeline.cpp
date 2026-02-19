@@ -86,8 +86,11 @@ void GpuComputePipeline::bind_layout(const GpuLayout &layout) {
         if (uniforms.is_empty())
             continue;
 
-        // RID set_rid = rd->uniform_set_create(uniforms, _shader, set_index);
+        
         RID set_rid = UniformSetCacheRD::get_cache(_shader, set_index, uniforms);
+        // if(!set_rid.is_valid())
+            // set_rid = rd->uniform_set_create(uniforms, _shader, set_index);
+
         if (!set_rid.is_valid()) {
             UtilityFunctions::printerr("GpuComputePipeline (" + _shader_name + "): Failed to create uniform set for set ", set_index);
             continue;
